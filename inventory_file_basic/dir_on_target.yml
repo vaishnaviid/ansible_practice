@@ -1,0 +1,10 @@
+---
+- name: create a directory on target machine
+  hosts: webserver
+  become: yes
+  tasks:
+    - name: create a new directory inside ec2_user directory
+      ansible.builtin.file:
+        path: /home/ec2-user/data_dir
+        state: directory
+        mode: '0755'  
