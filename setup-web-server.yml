@@ -1,0 +1,26 @@
+---
+- name: setup a web server
+  hosts: localhost
+  become: true  
+
+  tasks:
+    - name: install nginx package
+      ansible.builtin.yum:
+        name: nginx
+        state: present
+
+    - name: start and enable nginx service
+      ansible.builtin.systemd_service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: remove a default index.html file
+      ansible.builtin.file:
+        path: /usr/share/nginx/html/index.html
+        state: absent
+
+    - name: create a custom index.html file
+      ansible.builtin.copy:
+        dest: /usr/share/nginx/html/index.html
+        content: <>h1> Welcome to Ansible Web Server </h1>
