@@ -1,0 +1,61 @@
+---
+- name: Installation of LEMP stack with variables
+  hosts: localhost
+  become: yes
+
+  vars:
+    web_pkg: nginx
+    db_pkg: mariadb105-server
+    php_pkgs: 
+      - php
+      - php-fpm
+      - php-mysqlnd
+    web_service: nginx
+    db_service: mariadb
+    php_service: php-fpm
+    php_index_file: /usr/share/nginx/html/index.php
+
+  tasks:
+    - name: Install Webserver
+      ansible.builtin.dnf:
+        name: "{{ web_pkg }}"
+        state: present
+
+    - name: Install DB server
+      ansible.builtin.dnf:
+        name: "{{ db_pkg }}"
+        state: present
+
+    - name: Install PHP packages
+      ansible.builtin.dnf:
+        name: "{{ php_pkgs }}"
+        state: present
+    
+    - name: Start and enable Web server
+      ansible.builtin.systemd:
+        name: "{{ web_service }}"
+        state: started
+        enabled: yes
+
+    - name: Start and enable DB server
+      ansible.builtin.systemd:
+        name: "{{ db_service }}"
+        state: started
+        enabled: yes
+
+    - name: Start and enable PHP-FPM
+      ansible.builtin.systemd:
+        name: "{{ php_service }}"
+        state: started
+        enabled: yes
+
+    - name: Deploy PHP info page
+      ansible.builtin.copy:
+        dest: "{{ php_index_file }}"
+        content: |
+          <?php
+          phpinfo();
+          ?>
+        owner: nginx
+        group: nginx
+        mode: '0644'

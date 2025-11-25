@@ -1,0 +1,57 @@
+---
+- name: Installation of lemp stack
+  hosts: localhost
+  become: yes
+
+  tasks:
+    - name: install nginx
+      ansible.builtin.yum:
+        name: nginx
+        state: present
+
+    - name: start and enable nginx service
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Install Mariadb server
+      ansible.builtin.yum:
+        name: mariadb105-server
+        state: present
+
+    - name: start and enable mariadb service
+      ansible.builtin.systemd:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: install php and php-mysql
+      ansible.builtin.yum:
+        name:
+          - php
+          - php-fpm
+          - php-mysql
+        state: present
+
+    - name: start and enable php-fpm service
+      ansible.builtin.systemd:
+        name: php-fpm
+        state: started
+        enabled: yes
+
+    - name: restart nginx to apply php installation
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted
+
+    - name: create a php info file for testing
+      ansible.builtin.copy: 
+        dest: /usr/share/nginx/html/info.php
+        content: |
+         <?php 
+         phpinfo(); 
+         ?>
+        owner: nginx
+        group: nginx    
+        mode: '0644'
