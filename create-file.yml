@@ -6,3 +6,4 @@
       ansible.builtin.file:
         path: /home/ec2-user/first_ansible_file.txt
         state: touch
+        mode: '0644'

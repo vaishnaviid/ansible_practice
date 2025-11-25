@@ -1,0 +1,8 @@
+---
+- name: remove a file from local machine
+  hosts: localhost
+  tasks:
+    - name: remove the file named 'first_ansible_file.txt' from 'ec2_user' directory
+      ansible.builtin.file:
+        path: /home/ec2-user/first_ansible_file.txt
+        state: absent   

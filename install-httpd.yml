@@ -1,0 +1,16 @@
+---
+- name: install, start and enable apche httpd on local machine
+  hosts: localhost
+  tasks:
+    - name: install httpd package
+      ansible.builtin.yum:
+        name: httpd
+        state: present
+    - name: start httpd service
+      ansible.builtin.systemd_service:
+        name: httpd
+        state: started
+    - name: enable httpd service
+      ansible.builtin.systemd_service:  
+        name: httpd
+        enabled: true
