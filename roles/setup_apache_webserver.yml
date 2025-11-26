@@ -1,0 +1,25 @@
+---
+- name: Install and setup Apache webserver
+  hosts: localhost
+  become: yes
+  vars:
+    apache_pkg: httpd
+    apache_service: httpd
+    apache_index_file: /var/www/html/index.html
+  tasks:
+    - name: Install httpd package
+      ansible.builtin.yum:
+        name: "{{ apache_pkg }}"
+        state: present
+
+    - name: start and enable httpd service
+      ansible.builtin.systemd:
+        name: "{{ apache_service }}"
+        state: started
+        enabled: yes
+
+    - name: create a simple index.html file
+      ansible.builtin.copy:
+        dest: "{{ apache_index_file }}"
+        content: "<h1>Welcome to Ansible Apache Webserver</h1>"
+        mode: '0644'
