@@ -1,0 +1,42 @@
+---
+- name: create a web server with nginx without handlers
+  hosts: webserver
+  become: yes
+
+  vars:
+    web_pkg: nginx
+    web_service: nginx  
+    nginx_index_file: /usr/share/nginx/html
+    web_conf_file: /etc/nginx/conf.d/custom.conf
+
+  tasks:
+
+    - name: Install Webserver
+      ansible.builtin.yum:
+        name: "{{ web_pkg }}"
+        state: present
+
+    - name: Start and enable Web server
+      ansible.builtin.systemd:
+        name: "{{ web_service }}"
+        state: started
+        enabled: yes
+
+    - name: Edit nginx configuration to serve custom index file
+      ansible.builtin.blockinfile:
+        path: "{{ web_conf_file }}"
+        create: yes
+        block: |
+          server {
+              listen 81;
+              root {{ nginx_index_file }};
+              index index.html;
+          }
+
+    - name: Deploy html page on web server
+      ansible.builtin.copy:
+        dest: "{{ nginx_index_file }}/index.html"
+        content: "<h1> Welcome to Web Server setup using Ansible running on {{ inventory_hostname }} </h1>"
+        owner: nginx
+        group: nginx
+        mode: '0644'
